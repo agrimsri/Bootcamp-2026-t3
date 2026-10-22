@@ -1,19 +1,22 @@
 from flask import Flask
+from app.config import Config
+from app.extensions import db
 
-def create_app():
+
+
+def create_app(class_name=Config):
 
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'wijebfwieuvpqwiuebgfwubwewebfuowegfi'
 
+    app.config.from_object(class_name)
+    db.init_app(app)
 
-    @app.route('/')
-    def home():
-        return '<h1>Hello, World!</h1>'
+    from app.models import User
 
 
     from app.routes.auth import auth
-    from app.routes.views import view
+    from app.routes.views import views
     app.register_blueprint(auth)
-    app.register_blueprint(view)
+    app.register_blueprint(views)
 
     return app
