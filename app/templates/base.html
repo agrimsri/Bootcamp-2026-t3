@@ -14,7 +14,7 @@
   <body>
     <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">OurApp</a>
+        <a class="navbar-brand" href="{{ url_for('views.home') }}">Havenly</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -27,26 +27,29 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('views.home') }}">Home</a>
-            </li>
+          <ul class="navbar-nav ms-auto">
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('auth.register') }}"
-                >Register</a
+              <a class="nav-link" href="{{ url_for('auth.register_customer') }}"
+                >Register as Customer</a
               >
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+              <a
+                class="nav-link"
+                href="{{ url_for('auth.register_professional') }}"
+                >Register as Professional</a
+              >
             </li>
           </ul>
         </div>
       </div>
     </nav>
-    <main>{% block content %}My App{% endblock %}</main>
+    <main>
+      <div class="container mt-4">{% block content %}My App{% endblock %}</div>
+    </main>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
