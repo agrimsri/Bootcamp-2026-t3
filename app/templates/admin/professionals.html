@@ -1,0 +1,34 @@
+{% extends "base.html" %} {% block title %}Admin Dashboard{% endblock %} {%
+block content %}
+<h1>Professionals</h1>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Username</th>
+      <th scope="col">Email</th>
+      <th scope="col">About</th>
+      <th scope="col">Service</th>
+      <th scope="col">Approved</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for professional in professionals %}
+    <tr>
+      <th scope="row">{{ loop.index }}</th>
+      <td>{{ professional.user.username }}</td>
+      <td>{{ professional.user.email }}</td>
+      <td>{{ professional.about }}</td>
+      <td>{{ professional.service.name }}</td>
+      <td>{{ professional.approved }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+    </tr>
+
+  </tbody>
+</table>
+{% endblock %}
