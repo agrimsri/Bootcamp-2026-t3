@@ -1,34 +1,94 @@
 {% extends "base.html" %} {% block title %}Admin Dashboard{% endblock %} {%
 block content %}
 <h1>Professionals</h1>
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Username</th>
-      <th scope="col">Email</th>
-      <th scope="col">About</th>
-      <th scope="col">Service</th>
-      <th scope="col">Approved</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for professional in professionals %}
-    <tr>
-      <th scope="row">{{ loop.index }}</th>
-      <td>{{ professional.user.username }}</td>
-      <td>{{ professional.user.email }}</td>
-      <td>{{ professional.about }}</td>
-      <td>{{ professional.service.name }}</td>
-      <td>{{ professional.approved }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+{% if pending_professionals %}
+<div>
+  <h2 class="mt-5">Pending Approvals</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Username</th>
+        <th scope="col">Email</th>
+        <th scope="col">About</th>
+        <th scope="col">Service</th>
+        <th scope="col">Approved</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for professional in pending_professionals %}
+      <tr>
+        <th scope="row">{{ loop.index }}</th>
+        <td>{{ professional.user.username }}</td>
+        <td>{{ professional.user.email }}</td>
+        <td>{{ professional.about }}</td>
+        <td>{{ professional.service.name }}</td>
+        <td>{{ professional.approved }}</td>
+        <td>
+          <div class="btn-group" role="group">
+            <form
+              action="{{ url_for('admin_bp.approve_professional', professional_id=professional.id) }}"
+              method="POST"
+            >
+              <button type="submit" class="btn btn-success">Accept</button>
+            </form>
+            <form
+              action="{{ url_for('admin_bp.reject_professional', professional_id=professional.id) }}"
+              method="POST"
+            >
+              <button type="submit" class="btn btn-danger">Reject</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
 
-
-    </tr>
-
-  </tbody>
-</table>
+<div>
+  <h2 class="mb-3 mt-5">Approved Professionals</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Username</th>
+        <th scope="col">Email</th>
+        <th scope="col">About</th>
+        <th scope="col">Service</th>
+        <th scope="col">Blacklist</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for professional in approved_professionals %}
+      <tr>
+        <th scope="row">{{ loop.index }}</th>
+        <td>{{ professional.user.username }}</td>
+        <td>{{ professional.user.email }}</td>
+        <td>{{ professional.about }}</td>
+        <td>{{ professional.service.name }}</td>
+        <td>
+          {% if professional.user.is_active %}
+          <form
+            action="{{ url_for('admin_bp.toggle_blacklist_professional', professional_id=professional.id) }}"
+            method="POST"
+          >
+            <button type="submit" class="btn btn-dark">Blacklist</button>
+          </form>
+          {% else %}
+          <form
+            action="{{ url_for('admin_bp.toggle_blacklist_professional', professional_id=professional.id) }}"
+            method="POST"
+          >
+            <button type="submit" class="btn btn-dark">Unblock</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

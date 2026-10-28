@@ -20,6 +20,14 @@ def login():
             flash("User does not exist. Please sign up.", "danger")
             return redirect(url_for('views.home'))
 
+        if not user.is_active:
+            flash("Account has been suspended", 'danger')
+            redirect(url_for('views.home'))
+
+        if user.role == 'professional' and user.professional_profile.approved == False:
+            flash("Your account is pending approval. Please wait for admin approval.", "info")
+            return redirect(url_for('views.home'))
+
 
         if user.check_password(password):
             login_user(user)
@@ -30,7 +38,7 @@ def login():
             elif role == 'professional':
                 return redirect(url_for('views.professional_dashboard'))
             elif role == 'admin':
-                return redirect(url_for('views.admin_dashboard'))
+                return redirect(url_for('admin_bp.admin_dashboard'))
             else:
                 flash("Unknown user role.", "danger")
                 return redirect(url_for('views.home'))
@@ -77,6 +85,7 @@ def register_professional():
 
         username = request.form.get('username', "").strip()
         service_id = request.form.get('service', "").strip()
+        about = request.form.get('about', "").strip()
 
         user = User.query.filter_by(email=email).first()
         if user:
@@ -89,7 +98,7 @@ def register_professional():
         db.session.add(user)
         db.session.commit()
 
-        prof = Professional(user_id=user.id, service_id=service_id)
+        prof = Professional(user_id=user.id, service_id=service_id, about=about)
         db.session.add(prof)
         db.session.commit()
 

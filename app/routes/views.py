@@ -1,5 +1,7 @@
-from flask import Blueprint, render_template
-from app.models import Professional
+from flask import Blueprint, render_template, flash, redirect, url_for, request
+from app.models import Professional, User
+from flask_login import login_required
+from app.extensions import db
 
 views = Blueprint('views', __name__)
 
@@ -18,12 +20,11 @@ def customer_dashboard():
 def professional_dashboard():
     return render_template('/professional/dashboard.html')
 
-@views.route('/admin/dashboard')
-def admin_dashboard():
-    return render_template('/admin/dashboard.html')
 
 
-@views.route('/admin/professionals')
-def admin_professionals():
-    professionals = Professional.query.all()
-    return render_template('/admin/professionals.html', professionals=professionals)
+##############################
+# ADMIN ROUTES
+##############################
+
+
+##############################
