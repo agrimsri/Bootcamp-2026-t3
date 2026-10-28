@@ -22,7 +22,7 @@ def login():
 
         if not user.is_active:
             flash("Account has been suspended", 'danger')
-            redirect(url_for('views.home'))
+            return redirect(url_for('views.home'))
 
         if user.role == 'professional' and user.professional_profile.approved == False:
             flash("Your account is pending approval. Please wait for admin approval.", "info")
@@ -34,7 +34,7 @@ def login():
             role = user.role
             flash("Login successful!", "success")
             if role == 'customer':
-                return redirect(url_for('views.customer_dashboard'))
+                return redirect(url_for('customer_bp.dashbaord'))
             elif role == 'professional':
                 return redirect(url_for('views.professional_dashboard'))
             elif role == 'admin':
@@ -73,7 +73,9 @@ def register_customer():
         db.session.commit()
 
         flash("Registration successful!" , "success")
-        return redirect(url_for('views.customer_dashboard'))
+
+        login_user(user)
+        return redirect(url_for('customer_bp.dashboard'))
 
     return render_template('/auth/register_customer.html')
 

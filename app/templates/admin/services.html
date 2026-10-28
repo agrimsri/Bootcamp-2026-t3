@@ -1,0 +1,163 @@
+{% extends "base.html" %} {% block title %} Services {% endblock %} {% block
+content %}
+
+<div class="row">
+  <div class="col">
+    <h1>Services</h1>
+  </div>
+
+    <div class="col"><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addService">Add Service</button></div>
+  </div>
+
+  <table class="table table-striped table-bordered border-dark">
+    <thead>
+      <tr>
+        <th scope="col">Id</th>
+        <th scope="col">Name</th>
+        <th scope="col">Description</th>
+        <th scope="col">Price</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for service in services %}
+      <tr>
+        <th scope="row">{{ loop.index }}</th>
+        <td>{{ service.name }}</td>
+        <td>{{ service.description }}</td>
+        <td>{{ service.price }}</td>
+        <td>
+            <div class="row ">
+                <div class="col"">
+                    <form action="{{ url_for('admin_bp.delete_service', service_id=service.id) }}" method="POST">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </div>
+                <div class="col">
+                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#service-{{ service.id }}">Edit</button>
+                </div>
+            </div>   
+        </td>
+      </tr>
+
+      <!-- Edit service Modal -->
+        <div class="modal fade" id="service-{{ service.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Edit service</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ url_for('admin_bp.edit_service', service_id=service.id) }}" method="POST">
+        <div class="mb-3">
+          <label for="email" class="form-label">Name</label>
+          <input
+            type="string"
+            class="form-control"
+            id="name"
+            name="name"
+            value="{{ service.name }}"
+            required
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea
+            class="form-control"
+            id="description"
+            name="description"
+            rows="3"
+            required
+          >{{ service.description }}</textarea>
+        </div>
+
+        <div class="mb-3">
+          <label for="price" class="form-label">Price</label>
+          <input
+            type="number"
+            class="form-control"
+            id="price"
+            name="price"
+            value="{{ service.price }}"
+            required
+          />
+        </div>
+
+        
+        <div class="modal-footer">
+        <button type="submit" class="btn btn-primary w-100">Edit Service</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+      </form>
+            </div>
+            </div>
+        </div>
+        </div>
+
+      {% endfor %}
+    </tbody>
+  </table>
+
+
+
+
+<!-- Add service Modal -->
+<div class="modal fade" id="addService" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Add a service</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="{{ url_for('admin_bp.add_service') }}" method="POST">
+        <div class="mb-3">
+          <label for="email" class="form-label">Name</label>
+          <input
+            type="string"
+            class="form-control"
+            id="name"
+            name="name"
+            required
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea
+            class="form-control"
+            id="description"
+            name="description"
+            rows="3"
+            required
+          ></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label for="price" class="form-label">Price</label>
+          <input
+            type="number"
+            class="form-control"
+            id="price"
+            name="price"
+            required
+          />
+        </div>
+
+        
+        <div class="modal-footer">
+        <button type="submit" class="btn btn-primary w-100">Add Service</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+      </form>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+
+  {% endblock %}
+</div>

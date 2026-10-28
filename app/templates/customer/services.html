@@ -1,0 +1,121 @@
+{% extends 'base.html' %} {% block title %}Services{% endblock %} {% block
+content %}
+<h1>Services</h1>
+
+<div class="row g-4 mt-5">
+  {% for service in services %}
+  <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">{{ service.name }}</h5>
+        <p class="card-text">{{ service.description }}</p>
+
+        <!-- Book Button -->
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#bookingModal{{ service.id }}"
+        >
+          Book
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for this service -->
+  <div
+    class="modal fade"
+    id="bookingModal{{ service.id }}"
+    tabindex="-1"
+    aria-labelledby="bookingModalLabel{{ service.id }}"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form method="POST" action="">
+          <div class="modal-header">
+            <h5 class="modal-title" id="bookingModalLabel{{ service.id }}">
+              Book {{ service.name }} Service
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+
+          <div class="modal-body">
+            <input type="hidden" name="service_id" value="{{ service.id }}" />
+
+            <div class="mb-3">
+              <label for="date{{ service.id }}" class="form-label">
+                Date
+              </label>
+              <input
+                type="date"
+                class="form-control"
+                id="date{{ service.id }}"
+                name="date"
+                min="{{ today }}"
+                required
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="slot{{ service.id }}" class="form-label">
+                Time Slot
+              </label>
+              <select
+                class="form-select"
+                id="slot{{ service.id }}"
+                name="time_slot"
+                required
+              >
+                <option value="">Select a time slot</option>
+                <option value="09:00-09:3   0">09:00 AM - 09:30 AM</option>
+                <option value="09:30-10:00">09:30 AM - 10:00 AM</option>
+                <option value="10:00-10:30">10:00 AM - 10:30 AM</option>
+                <option value="10:30-11:00">10:30 AM - 11:00 AM</option>
+                <option value="11:00-11:30">11:00 AM - 11:30 AM</option>
+                <option value="11:30-12:00">11:30 AM - 12:00 PM</option>
+                <option value="12:00-12:30">12:00 PM - 12:30 PM</option>
+                <option value="12:30-13:00">12:30 PM - 01:00 PM</option>
+                <option value="13:00-13:30">01:00 PM - 01:30 PM</option>
+                <option value="13:30-14:00">01:30 PM - 02:00 PM</option>
+                <option value="14:00-14:30">02:00 PM - 02:30 PM</option>
+                <option value="14:30-15:00">02:30 PM - 03:00 PM</option>
+                <option value="15:00-15:30">03:00 PM - 03:30 PM</option>
+                <option value="15:30-16:00">03:30 PM - 04:00 PM</option>
+                <option value="16:00-16:30">04:00 PM - 04:30 PM</option>
+                <option value="16:30-17:00">04:30 PM - 05:00 PM</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-primary">
+              Confirm Booking
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  {% else %}
+  <div class="col-12">
+    <p class="text-center text-muted">No services available.</p>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

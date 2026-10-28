@@ -37,11 +37,30 @@
                 >Professionals</a
               >
             </li>
-            {% elif current_user.role == 'customer' %} {% elif current_user.role
-            == 'professional' %} {% endif %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('admin_bp.services') }}"
+                >Services</a
+              >
+            </li>
+            {% elif current_user.role == 'customer' %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('customer_bp.dashboard') }}"
+                >Dashboard</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('customer_bp.services') }}"
+                >Services</a
+              >
+            </li>
+            {% elif current_user.role == 'professional' %} {% endif %}
 
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+              <a
+                class="nav-link btn btn-outline-danger"
+                href="{{ url_for('auth.logout') }}"
+                >Logout</a
+              >
             </li>
             {% else %}
             <li class="nav-item">
