@@ -62,3 +62,4 @@ def accept_request(request_id):
 
     flash(f"You have accepted the booking for {service_request.service.name}!", "success")
     return redirect(url_for('professional_bp.dashboard'))
+

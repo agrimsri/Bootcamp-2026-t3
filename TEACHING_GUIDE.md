@@ -495,3 +495,4 @@ For fast-finishing students or as a homework assignment:
    Allow the customer to cancel a request if it is still in the `requested` status.
 3. **Ratings / Reviews**:
    Allow the customer to leave a 1-5 star rating and comment once a service is completed.
+
