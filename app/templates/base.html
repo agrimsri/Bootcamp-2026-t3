@@ -53,7 +53,15 @@
                 >Services</a
               >
             </li>
-            {% elif current_user.role == 'professional' %} {% endif %}
+            {% elif current_user.role == 'professional' %}
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="{{ url_for('professional_bp.dashboard') }}"
+                >Dashboard</a
+              >
+            </li>
+            {% endif %}
 
             <li class="nav-item">
               <a

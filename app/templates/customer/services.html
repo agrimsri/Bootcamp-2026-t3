@@ -33,7 +33,7 @@ content %}
   >
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
-        <form method="POST" action="">
+        <form method="POST" action="{{ url_for('customer_bp.book_service') }}">
           <div class="modal-header">
             <h5 class="modal-title" id="bookingModalLabel{{ service.id }}">
               Book {{ service.name }} Service
@@ -74,7 +74,7 @@ content %}
                 required
               >
                 <option value="">Select a time slot</option>
-                <option value="09:00-09:3   0">09:00 AM - 09:30 AM</option>
+                <option value="09:00-09:30">09:00 AM - 09:30 AM</option>
                 <option value="09:30-10:00">09:30 AM - 10:00 AM</option>
                 <option value="10:00-10:30">10:00 AM - 10:30 AM</option>
                 <option value="10:30-11:00">10:30 AM - 11:00 AM</option>

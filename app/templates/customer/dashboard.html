@@ -1,5 +1,66 @@
-{% extends 'base.html' %} {% block title %}Customer Dashboard{% endblock %} {%
-block content %}
-<h1>Customer Dashboard</h1>
-<p>Welcome, Customer!</p>
+{% extends 'base.html' %}
+{% block title %}Customer Dashboard{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h1>Customer Dashboard</h1>
+    <p class="text-muted mb-0">Welcome, {{ current_user.username }}!</p>
+  </div>
+  <a href="{{ url_for('customer_bp.services') }}" class="btn btn-primary">Book a Service</a>
+</div>
+
+<h3 class="mt-4 mb-3">My Service Requests</h3>
+
+{% if requests %}
+<div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead class="table-light">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Service</th>
+        <th scope="col">Price</th>
+        <th scope="col">Date</th>
+        <th scope="col">Time Slot</th>
+        <th scope="col">Status</th>
+        <th scope="col">Professional</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for req in requests %}
+      <tr>
+        <th scope="row">{{ loop.index }}</th>
+        <td>{{ req.service.name }}</td>
+        <td>${{ "%.2f"|format(req.service.price) }}</td>
+        <td>{{ req.date }}</td>
+        <td>{{ req.time_slot }}</td>
+        <td>
+          {% if req.status == 'requested' %}
+          <span class="badge bg-warning text-dark">Requested</span>
+          {% elif req.status == 'accepted' %}
+          <span class="badge bg-success">Accepted</span>
+          {% else %}
+          <span class="badge bg-secondary">{{ req.status|capitalize }}</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if req.professional %}
+            <strong>{{ req.professional.user.username }}</strong>
+          {% else %}
+            <span class="text-muted fst-italic">Waiting for professional...</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="card p-5 text-center">
+  <p class="text-muted mb-3">You haven't requested any services yet.</p>
+  <div>
+    <a href="{{ url_for('customer_bp.services') }}" class="btn btn-outline-primary">Browse Services</a>
+  </div>
+</div>
+{% endif %}
 {% endblock %}
+

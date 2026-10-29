@@ -67,9 +67,11 @@ def create_app(class_name=Config):
     from app.routes.views import views
     from app.routes.admin import admin_bp
     from app.routes.customer import customer_bp
+    from app.routes.professional import professional_bp
     app.register_blueprint(auth)
     app.register_blueprint(views)
     app.register_blueprint(admin_bp)
     app.register_blueprint(customer_bp)
+    app.register_blueprint(professional_bp)
 
     return app

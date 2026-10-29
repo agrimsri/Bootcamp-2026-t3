@@ -1,5 +1,109 @@
-{% extends 'base.html' %} {% block title %}Professional Dashboard{% endblock %}
+{% extends 'base.html' %}
+{% block title %}Professional Dashboard{% endblock %}
 {% block content %}
-<h1>Professional Dashboard</h1>
-<p>Welcome, Professional!</p>
+<div class="mb-4">
+  <h1>Professional Dashboard</h1>
+  <p class="text-muted">Welcome, <strong>{{ current_user.username }}</strong>!</p>
+  <div>
+    <span class="badge bg-primary">
+      Service: {{ professional.service.name if professional.service else 'Not Assigned' }}
+    </span>
+    {% if professional.approved %}
+      <span class="badge bg-success">Approved</span>
+    {% else %}
+      <span class="badge bg-warning text-dark">Pending Approval</span>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Available Requests -->
+<div class="card mb-5 shadow-sm">
+  <div class="card-header bg-white">
+    <h4 class="mb-0">Available Requests ({{ professional.service.name if professional.service else 'General' }})</h4>
+  </div>
+  <div class="card-body">
+    {% if available_requests %}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Customer</th>
+            <th scope="col">Address</th>
+            <th scope="col">Date</th>
+            <th scope="col">Time Slot</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for req in available_requests %}
+          <tr>
+            <th scope="row">{{ loop.index }}</th>
+            <td>{{ req.customer.user.username }}</td>
+            <td>{{ req.customer.address or 'N/A' }}</td>
+            <td>{{ req.date }}</td>
+            <td>{{ req.time_slot }}</td>
+            <td>
+              <form
+                action="{{ url_for('professional_bp.accept_request', request_id=req.id) }}"
+                method="POST"
+                class="d-inline"
+              >
+                <button type="submit" class="btn btn-sm btn-success">
+                  Accept
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-muted mb-0">No new service requests available right now.</p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- My Accepted Requests -->
+<div class="card shadow-sm">
+  <div class="card-header bg-white">
+    <h4 class="mb-0">My Accepted Requests</h4>
+  </div>
+  <div class="card-body">
+    {% if accepted_requests %}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Customer</th>
+            <th scope="col">Address</th>
+            <th scope="col">Date</th>
+            <th scope="col">Time Slot</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for req in accepted_requests %}
+          <tr>
+            <th scope="row">{{ loop.index }}</th>
+            <td>{{ req.customer.user.username }}</td>
+            <td>{{ req.customer.address or 'N/A' }}</td>
+            <td>{{ req.date }}</td>
+            <td>{{ req.time_slot }}</td>
+            <td>
+              <span class="badge bg-success">Accepted</span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-muted mb-0">You have not accepted any service requests yet.</p>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}
+
