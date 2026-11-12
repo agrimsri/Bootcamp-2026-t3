@@ -1,5 +1,58 @@
 {% extends "base.html" %} {% block title %}Admin Dashboard{% endblock %} {%
 block content %}
-<h1>Admin Dashboard</h1>
-<p>Welcome, {{ current_user.username }}!</p>
+<div class="container py-4">
+  <h2 class="mb-4">Admin Dashboard</h2>
+
+  <div class="row g-4">
+    <!-- Professionals -->
+    <div class="col-12 col-sm-6 col-lg-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h6 class="text-muted">Total Professionals</h6>
+          <h2 class="text-primary">{{ stats.professionals }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customers -->
+    <div class="col-12 col-sm-6 col-lg-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h6 class="text-muted">Total Customers</h6>
+          <h2 class="text-success">{{ stats.customers }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Unaccepted Requests -->
+    <div class="col-12 col-sm-6 col-lg-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h6 class="text-muted">Unaccepted Requests</h6>
+          <h2 class="text-warning">{{ stats.unaccepted_requests }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accepted Requests -->
+    <div class="col-12 col-sm-6 col-lg-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h6 class="text-muted">Accepted Requests</h6>
+          <h2 class="text-info">{{ stats.accepted_requests }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Completed Requests -->
+    <div class="col-12 col-sm-6 col-lg-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h6 class="text-muted">Completed Requests</h6>
+          <h2 class="text-success">{{ stats.completed_requests }}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

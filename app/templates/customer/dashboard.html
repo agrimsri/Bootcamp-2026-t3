@@ -1,5 +1,80 @@
 {% extends 'base.html' %} {% block title %}Customer Dashboard{% endblock %} {%
 block content %}
-<h1>Customer Dashboard</h1>
-<p>Welcome, Customer!</p>
+<h1>Welcome {{ current_user.username }}</h1>
+<div class="container mt-5">
+  {% if ongoing_service_requests %}
+  <div class="row mt-4">
+    <h2>Current Requests</h2>
+    <table class="table table-bordered border-black" mt-3>
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Service Name</th>
+          <th scope="col">Date</th>
+          <th scope="col">Time Slot</th>
+          <th scope="col">Status</th>
+          <th scope="col">Professional</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for request in ongoing_service_requests %}
+        <tr>
+          <th scope="row">{{ loop.index }}</th>
+          <td>{{ request.service.name }}</td>
+          <td>{{ request.date }}</td>
+          <td>{{ request.time_slot }}</td>
+          <td>{{ request.status }}</td>
+          <td>
+            {{ request.professional.user.username if request.professional else
+            'Not Assigned' }}
+          </td>
+          <td>
+            <form
+              action="{{ url_for('customer_bp.request_completed', request_id=request.id) }}"
+              ,
+              method="POST"
+            >
+              <button type="submit" class="btn btn-success btn-sm">Done</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %} {% if completed_service_requests %}
+  <div class="row mt-5">
+    <h2>Completed Requests</h2>
+    <table class="table table-bordered border-black" mt-3>
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Service Name</th>
+          <th scope="col">Date</th>
+          <th scope="col">Time Slot</th>
+          <th scope="col">Status</th>
+          <th scope="col">Professional</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for request in completed_service_requests %}
+        <tr>
+          <th scope="row">{{ loop.index }}</th>
+          <td>{{ request.service.name }}</td>
+          <td>{{ request.date }}</td>
+          <td>{{ request.time_slot }}</td>
+          <td>{{ request.status }}</td>
+          <td>
+            {{ request.professional.user.username if request.professional else
+            'Not Assigned' }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div>
+
 {% endblock %}

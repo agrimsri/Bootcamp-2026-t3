@@ -1,0 +1,51 @@
+{% extends 'base.html' %} {% block title %}Professional Dashboard{% endblock %}
+{% block content %}
+<div class="container">
+  <h1>Profile</h1>
+  <form>
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input
+        type="email"
+        class="form-control"
+        id="email"
+        name="email"
+        value="{{ prof.user.email }}"
+        readonly
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="username" class="form-label">Username</label>
+      <input
+        type="text"
+        class="form-control"
+        id="username"
+        name="username"
+        value="{{ prof.user.username }}"
+        readonly
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="service" class="form-label">Service</label>
+      <input
+        type="text"
+        class="form-control"
+        id="service"
+        value="{{ prof.service.name }}"
+        readonly
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="about" class="form-label">About</label>
+      <textarea class="form-control" id="about" name="about" rows="3" readonly>
+{{ prof.about }}</textarea
+      >
+    </div>
+
+    <button class="btn btn-warning w-100">Edit</button>
+  </form>
+</div>
+{% endblock %}

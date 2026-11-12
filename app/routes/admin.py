@@ -1,6 +1,6 @@
 from flask import Blueprint, flash, render_template, url_for, redirect, request
 from flask_login import login_required
-from app.models import User, Professional, Customer, Service
+from app.models import User, Professional, Customer, Service, ServiceRequest
 from app.extensions import db
 
 admin_bp = Blueprint('admin_bp', __name__,  url_prefix='/admin')
@@ -8,7 +8,15 @@ admin_bp = Blueprint('admin_bp', __name__,  url_prefix='/admin')
 
 @admin_bp.route('/dashboard')
 def admin_dashboard():
-    return render_template('/admin/dashboard.html')
+    stats = {
+        'professionals': Professional.query.count(),
+        'customers': Customer.query.count(),
+        'unaccepted_requests': ServiceRequest.query.filter_by(status='requested').count(),
+        'accepted_requests': ServiceRequest.query.filter_by(status='accepted').count(),
+        'completed_requests': ServiceRequest.query.filter_by(status='completed').count()
+    }
+
+    return render_template('admin/dashboard.html', stats=stats)
 
 
 @admin_bp.route('/professionals')

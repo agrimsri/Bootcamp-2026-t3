@@ -12,15 +12,3 @@ def home():
     age = 32
     return render_template('home.html', user=user, age=age)
 
-@views.route('/professional/dashboard')
-def professional_dashboard():
-    return render_template('/professional/dashboard.html')
-
-
-
-##############################
-# ADMIN ROUTES
-##############################
-
-
-##############################

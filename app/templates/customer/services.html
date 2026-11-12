@@ -33,7 +33,7 @@ content %}
   >
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
-        <form method="POST" action="">
+        <form method="POST" action="{{ url_for('customer_bp.book_service') }}">
           <div class="modal-header">
             <h5 class="modal-title" id="bookingModalLabel{{ service.id }}">
               Book {{ service.name }} Service

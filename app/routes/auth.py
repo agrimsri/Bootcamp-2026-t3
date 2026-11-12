@@ -34,9 +34,9 @@ def login():
             role = user.role
             flash("Login successful!", "success")
             if role == 'customer':
-                return redirect(url_for('customer_bp.dashbaord'))
+                return redirect(url_for('customer_bp.dashboard'))
             elif role == 'professional':
-                return redirect(url_for('views.professional_dashboard'))
+                return redirect(url_for('professional_bp.dashboard'))
             elif role == 'admin':
                 return redirect(url_for('admin_bp.admin_dashboard'))
             else:
