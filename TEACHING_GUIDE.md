@@ -29,6 +29,7 @@ By the end of this session, students will understand:
 3. **Form Submission from Modals**: Sending dynamic IDs and input data from Bootstrap modals to Flask POST routes.
 4. **Relational Querying**: Filtering data based on user profile IDs and assigned service categories.
 5. **Blueprint Modularity**: Creating a clean `professional_bp` blueprint following the established patterns in `admin_bp` and `customer_bp`.
+6. **Query Parameters (`request.args`)**: Implementing clean search and filter functionality with GET requests and SQLAlchemy `.ilike()` / `.filter()` queries on the Admin side.
 
 ---
 
@@ -434,6 +435,159 @@ def accept_request(request_id):
 
 ---
 
+### Step 7: Search & Filter via Query Parameters (Admin Side)
+**Files**: `app/routes/admin.py` & `app/templates/admin/services.html` (or `app/templates/admin/professionals.html`)
+
+#### 🗣️ Teacher Explanation to Students:
+> *"So far in this project, every form we wrote (registration, login, booking, service creation) used `method="POST"` and `request.form`. Why? Because those actions create or modify data in the database.*
+> *Search and filtering are different: they do **not** change data; they simply **read and filter** data.*
+> *In web development, read-only search and filtering should **always** use `method="GET"`. When a form submits via GET, the browser places the inputs into the URL as **Query Parameters**:*
+> `http://localhost:5000/admin/services?search=plumb`
+> *Why is this important?*
+> 1. *Users can **bookmark** or **share** the filtered link.*
+> 2. *The browser's **Back** and **Forward** buttons work naturally without showing annoying 'Confirm form resubmission' alerts!*
+> 3. *In Flask, query parameters are accessed with `request.args.get('param_name')` instead of `request.form.get('param_name')`."*
+
+#### 💡 The Fundamental Distinction to Write on the Board:
+| Action | HTTP Method | Data Location | Flask Accessor | When to Use |
+| :--- | :--- | :--- | :--- | :--- |
+| **Search / Filter** | `GET` | URL Query String (`?search=term`) | `request.args.get('search')` | Finding, sorting, filtering records |
+| **Create / Update / Delete** | `POST` | Request Body (hidden) | `request.form.get('field')` | Booking, logging in, mutating database |
+
+---
+
+#### 💻 Option A: The Simplest Single-Field Search (Admin Services)
+Demonstrate this first so students grasp the query parameter mechanism with just 5 lines of code.
+
+##### 1. Update the Route in `app/routes/admin.py`:
+```python
+@admin_bp.route('/services')
+@login_required
+def services():
+    # 1. Grab query parameter from URL: ?search=keyword
+    search = request.args.get('search', '').strip()
+
+    # 2. Filter with SQLAlchemy .ilike() for case-insensitive partial match
+    if search:
+        services = Service.query.filter(Service.name.ilike(f"%{search}%")).all()
+    else:
+        services = Service.query.all()
+
+    # 3. Pass 'search' to template to keep the input box populated!
+    return render_template('/admin/services.html', services=services, search=search)
+```
+
+##### 2. Add the Search Bar in `app/templates/admin/services.html` (Above the table):
+```html
+<!-- Search Form using GET -->
+<form method="GET" action="{{ url_for('admin_bp.services') }}" class="row g-2 mb-4 align-items-center">
+  <div class="col-auto">
+    <input
+      type="text"
+      name="search"
+      class="form-control"
+      placeholder="Search services..."
+      value="{{ search or '' }}"
+    />
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn btn-outline-primary">Search</button>
+  </div>
+  {% if search %}
+  <div class="col-auto">
+    <!-- Reset button is simply a normal link back to the clean URL -->
+    <a href="{{ url_for('admin_bp.services') }}" class="btn btn-outline-secondary">Clear</a>
+  </div>
+  {% endif %}
+</form>
+```
+
+> [!TIP]
+> **Key Teaching Moment on UX**: Show students why `value="{{ search or '' }}"` is crucial: when the page reloads with results, the user can still see what word they searched for instead of the input box wiping empty!
+
+---
+
+#### 💻 Option B: Combined Search + Dropdown Filter (Admin Professionals)
+Once students understand Option A, show them how query parameters naturally scale to multiple fields (e.g. text search + category dropdown):
+`http://localhost:5000/admin/professionals?search=john&service_id=2`
+
+##### 1. Update the Route in `app/routes/admin.py`:
+```python
+@admin_bp.route('/professionals')
+@login_required
+def admin_professionals():
+    # Read query parameters from request.args
+    search = request.args.get('search', '').strip()
+    service_id = request.args.get('service_id', '').strip()
+
+    services = Service.query.all()
+
+    # Base query joining User table for username/email search
+    query = Professional.query.join(User)
+
+    # 1. Apply text search if provided
+    if search:
+        query = query.filter(
+            (User.username.ilike(f"%{search}%")) |
+            (User.email.ilike(f"%{search}%"))
+        )
+
+    # 2. Apply category dropdown filter if selected
+    if service_id:
+        query = query.filter(Professional.service_id == int(service_id))
+
+    # Split into pending and approved for display
+    pending_professionals = query.filter(Professional.approved == False).all()
+    approved_professionals = query.filter(Professional.approved == True).all()
+
+    return render_template(
+        '/admin/professionals.html',
+        pending_professionals=pending_professionals,
+        approved_professionals=approved_professionals,
+        services=services,
+        search=search,
+        selected_service_id=service_id
+    )
+```
+
+##### 2. Add Search & Filter Form in `app/templates/admin/professionals.html` (Above the tables):
+```html
+<form method="GET" action="{{ url_for('admin_bp.admin_professionals') }}" class="row g-2 mb-4">
+  <!-- 1. Text Search Input -->
+  <div class="col-md-4">
+    <input
+      type="text"
+      name="search"
+      class="form-control"
+      placeholder="Search by name or email..."
+      value="{{ search or '' }}"
+    />
+  </div>
+
+  <!-- 2. Dropdown Filter -->
+  <div class="col-md-4">
+    <select name="service_id" class="form-select">
+      <option value="">All Services</option>
+      {% for s in services %}
+      <option value="{{ s.id }}" {% if selected_service_id == s.id|string %}selected{% endif %}>
+        {{ s.name }}
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <!-- 3. Actions -->
+  <div class="col-md-4 d-flex gap-2">
+    <button type="submit" class="btn btn-primary">Filter</button>
+    {% if search or selected_service_id %}
+    <a href="{{ url_for('admin_bp.admin_professionals') }}" class="btn btn-outline-secondary">Reset</a>
+    {% endif %}
+  </div>
+</form>
+```
+
+---
+
 ## 4. Live Classroom Demo Script (Teacher Walkthrough)
 
 To demonstrate the full working flow to students, use the existing seeded test accounts:
@@ -459,6 +613,15 @@ To demonstrate the full working flow to students, use the existing seeded test a
    - Show students how the request immediately moves down into **My Accepted Requests**.
 6. **Log out and log back in as Customer (`cus1@email.com`)**:
    - Show students that the status has automatically changed to **Accepted**, and the assigned professional now shows **Proff Two**!
+7. **Demonstrate Admin Search & Filter via Query Parameters**:
+   - Log in as Admin: Email: `admin@email.com` | Password: `1234`
+   - Navigate to **Services** (`/admin/services`).
+   - Type `Plumb` into the search box and click **Search**.
+   - Point out the browser address bar to students: `http://localhost:5000/admin/services?search=Plumb`. Show them that only matching services are displayed.
+   - Click **Clear** to return to the full catalog.
+   - Next, navigate to **Professionals** (`/admin/professionals`).
+   - Select a service from the dropdown (e.g., `Electrical`) and click **Filter**. Show how the URL updates to `?service_id=2` and filters the table.
+   - Combine with a text search to show multiple query parameters working together (`?search=Two&service_id=2`).
 
 ---
 
@@ -483,6 +646,16 @@ To demonstrate the full working flow to students, use the existing seeded test a
 
 ### Q4: "Why did we use POST for accepting instead of a normal GET link?"
 - **Explanation**: Modifying server state (changing request status and assigning a professional) must always use `POST` (or `PUT`/`PATCH`), never `GET`. A `GET` request can be accidentally pre-fetched by browsers or search crawlers, triggering unwanted state changes.
+
+### Q5: "Why did `request.form.get('search')` return `None`?"
+- **Explanation**: A `<form method="GET">` sends values in the URL query string (after the `?`), which Flask parses into `request.args`. `request.form` is exclusively for `POST` request bodies. Always use `request.args.get(...)` for GET search/filter queries.
+
+### Q6: "What does `.ilike(f'%{search}%')` mean in SQLAlchemy?"
+- **Explanation**:
+  - `LIKE` is SQL's partial matching operator. The `%` character is a wildcard representing zero or more characters.
+  - Putting `%` on both sides (`f"%{search}%"`) matches the search term anywhere in the text (beginning, middle, or end).
+  - `ILIKE` is **case-insensitive** (e.g. `'elect'` matches `'Electrical'`, `'ELECTRICAL'`, or `'electrical'`).
+
 
 ---
 
